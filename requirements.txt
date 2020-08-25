@@ -1,0 +1,8 @@
+numpy
+flask
+opencv-python
+Flask
+numpy
+torch
+torchvision
+detectron2
