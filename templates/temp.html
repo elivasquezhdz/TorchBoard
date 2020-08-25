@@ -1,0 +1,28 @@
+{% extends "bootstrap/base.html" %}
+{% block title %} Steering behaviour {% endblock title %}
+
+{% block head %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/p5@1.1.4/lib/p5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.1.4/lib/addons/p5.sound.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/bmoren/p5.collide2D/p5.collide2d.min.js"></script>
+
+    <meta charset="utf-8" />
+    <style>
+    html, body {
+        margin: 0;
+        padding: 0;
+      }
+      canvas {
+        display: block;
+      }
+      </style>
+
+<script src={{ url_for('send_static', path='sprite.js') }}></script>
+<script src={{ url_for('send_static', path='playersprite.js') }}></script>
+<script src={{ url_for('send_static', path='player.js') }}></script>
+<script src={{ url_for('send_static', path='sketch.js') }}></script>
+<script src={{ url_for('send_static', path='shark.js') }}></script>
+
+
+{% endblock head %}
