@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Bootstrap CSS -->
+    <link rel="shorcut icon" href="{{url_for('static',filename='favicon.ico')}}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+    <main role="main" class="container">
+        <h2 style="text-align:center">Welcome to TorchBoard</h2>
+        <p style="text-align:center">Take a picture or upload your own</p>
+        <form style="text-align:center" action="/">
+            <input type="submit" value="Go back!" />
+        </form>
+        <br><br><br>
+        <div class="row">
+            <div class="col-md-12">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+                <div class="row">
+                    <form action="/upload" method="POST" enctype="multipart/form-data">
+
+                        <input id="files" name=file type="file">
+                        <input type="submit" value="Upload Image" />
+                    </form>
+                </div>
+                <br><br><br>
+                <div>
+                    <p>First take a snap and then click on GenSprites to send it process the image</p>
+                    <form method="POST" enctype="multipart/form-data" id="myForm">
+                        <input type="button" onclick="snap()" value="Snap"> <input type="button" value="GenSprites"
+                            onclick="upload()">
+                    </form>
+                    <div id="my_camera"></div>
+                    <div id="results"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src={{ url_for('send_static', path='webcam.js') }}></script>
+    <script>
+        function ShowCam() {
+            Webcam.set({
+                width: 640,
+                height: 480,
+                image_format: 'jpeg',
+                jpeg_quality: 100
+            });
+            Webcam.attach('#my_camera');
+        }
+        window.onload = ShowCam;
+
+        function snap() {
+            Webcam.snap(function (data_uri) {
+                // display results in page
+                document.getElementById('results').innerHTML =
+                    '<img id="image" src="' + data_uri + '"/>';
+            });
+        }
+
+        function upload() {
+            console.log("Uploading...")
+            var image = document.getElementById('image').src;
+            var form = document.getElementById('myForm');
+            var formData = new FormData(form);
+            formData.append("file", image);
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("POST", "/upload_cam");
+            // check when state changes, 
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    //alert(xmlhttp.responseText);
+                    console.log("ok");
+                    document.location.href='/upload_cam'
+                }
+            }
+            xmlhttp.send(formData);
+        }
+    </script>
+</body>
+
+</html>
