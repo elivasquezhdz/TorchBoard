@@ -23,29 +23,98 @@
             display: table;
         }
     </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body, html {
+          height: 100%;
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        * {
+          box-sizing: border-box;
+        }
+        
+        .bg-image {
+          /* The image used */
+          background-image: url("static/bg.PNG");
+          
+          /* Add the blur effect */
+          filter: blur(8px);
+          -webkit-filter: blur(8px);
+          
+          /* Full height */
+          height: 100%; 
+          
+          /* Center and scale the image nicely */
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: cover;
+        }
+        
+        /* Position text in the middle of the page/image */
+        .bg-text {
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0, 0.4); /* Black w/opacity/see-through */
+          color: white;
+          font-weight: bold;
+          border: 3px solid #f1f1f1;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 2;
+          width: 80%;
+          padding: 20px;
+          text-align: center;
+        }
+            </style>
 </head>
 
+
+
 <body>
-    <main role="main" class="container">
-        <h2 style="text-align:center">Welcome to TorchBoard</h2>
-        <p style="text-align:center">Select any of the options below</p>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="column">
-                        <a href="/picture">
-                            <img src="static/webcam.png" alt="Take picture" style="width:100%">
-                        </a>
-                    </div>
-                    <div class="column">
-                        <a href="/play">
-                            <img src="static/controller.png" alt="Play" style="width:100%">
-                        </a>
-                    </div>
+
+    <div class="bg-image"></div>
+    
+    <div class="bg-text">
+      <h2>Welcome to TorchBoard</h2>
+      <!---<h1 style="font-size:50px"></h1>--->
+      <p>Select the option below: <br><a href="/picture">Take a Picture</a>or <a href="/play">Play the game</a></p>
+    
+    
+      <div class="row">
+        <div class="col-md-18">
+            <div class="row">
+                <div class="column">
+                    <a href="/picture">
+                        <img src="static/webcam.png" alt="Take picture" style="width:50%">
+                    </a>
                 </div>
+                <div class="column">
+                    <a href="/play">
+                        <img src="static/controller.png" alt="Play" style="width:50%">
+                    </a>
+                </div>
+              
             </div>
         </div>
-    </main>
-</body>
+    </div>
+    <p>How it works?</p>
+    <p>
+        Based on a picture you take or upload it will generate the sprites for the game to use. <br>
+        It segments the image using Pytorch/Detectron and some filters are applied to it
+
+    </p>
+    <p>***The server is not saving the images</p>
+   
+
+    </div>
+    
+    </body>
+
+
+
+
 
 </html>

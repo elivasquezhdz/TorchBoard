@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Bootstrap CSS -->
+  <link rel="shorcut icon" href="{{url_for('static',filename='favicon.ico')}}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <meta charset="utf-8" />
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body, html {
+          height: 100%;
+          margin: 0;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        * {
+          box-sizing: border-box;
+        }
+        
+        .bg-image {
+          /* The image used */
+          background-image: url("static/bg.PNG");
+          
+          /* Add the blur effect */
+          filter: blur(8px);
+          -webkit-filter: blur(8px);
+          
+          /* Full height */
+          height: 100%; 
+          
+          /* Center and scale the image nicely */
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: cover;
+        }
+        
+        /* Position text in the middle of the page/image */
+        .bg-text {
+          background-color: rgb(0,0,0); /* Fallback color */
+          background-color: rgba(0,0,0, 0.4); /* Black w/opacity/see-through */
+          color: white;
+          font-weight: bold;
+          border: 3px solid #f1f1f1;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 2;
+          width: 80%;
+          padding: 20px;
+          text-align: center;
+        }
+            </style>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.1.4/lib/p5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/bmoren/p5.collide2D/p5.collide2d.min.js"></script>
+</head>
+
+<body>
+  <div class="bg-image"></div>
+  <div class="bg-text">
+  <main role="main" class="container">
+    <h2 style="text-align:center"> Press space for jump </h2>
+    <h3 style="text-align:center"> Press 'S' or 's' to take a screenshot</h3>
+    <form style="text-align:center" action="/">
+      <input type="submit" value="Go back!" />
+    </form>
+    <div class="row">
+      <div class="col-md-12">
+      </div>
+    </div>
+
+  </main>
+
+  <!--<script src={{ url_for('send_static', path='sprite.js') }}></script>-->
+  <script>
+
+        //Based on Daniel Shiffman's
+        // https://thecodingtrain.com/CodingChallenges/147-chrome-dinosaur.html
+        // https://youtu.be/l0HoJHc-63Q
+        // Google Chrome Dinosaur Game (Unicorn, run!)
+        // https://editor.p5js.org/codingtrain/sketches/v3thq2uhk
+        let score = 0;
+        let high_score = 0;
+        let scroll = 10;
+        let scrollBg = 0;
+        let player;
+        let playerImg;
+        let sharkImg;
+        let bImg;
+        let sharks = [];
+        let animation = [];
+        let playeranimation=[];
+        let soundClassifier;
+        let finished;
+        let input;
+        let img;
+        let spritesheet;
+        let spritedata;
+        
+
+        function preload() {
+        const options = {
+            probabilityThreshold: 0.95
+        };
+        sharkImg = loadImage('static/s1.png');
+        bImg = loadImage('static/background_inf.jpg');
+        animation.push(loadImage('static/s0.png'));  animation.push(loadImage('static/s0.png'));  animation.push(loadImage('static/s0.png'));
+        animation.push(loadImage('static/s1.png'));  animation.push(loadImage('static/s1.png'));  animation.push(loadImage('static/s1.png'));
+        animation.push(loadImage('static/s0.png'));  animation.push(loadImage('static/s0.png'));  animation.push(loadImage('static/s0.png'));
+        animation.push(loadImage('static/s1.png'));  animation.push(loadImage('static/s1.png'));  animation.push(loadImage('static/s1.png'));
+        animation.push(loadImage('static/s3.png'));  animation.push(loadImage('static/s3.png'));  animation.push(loadImage('static/s3.png'));
+        animation.push(loadImage('static/s3.png'));  animation.push(loadImage('static/s3.png'));  animation.push(loadImage('static/s3.png'));
+        
+        spritedata = loadJSON('static/frames.json');
+        //spritesheet = loadImage('static/sprites.png')
+        spritesheet = loadImage('data:image/png;base64,{{sprites}}');
+
+        }
+
+        function mousePressed() {
+        
+        //sharks.push(new Sprite(animation, 640,random(370,400),random(0.3,0.55)));
+        player.jump();
+        if (finished){
+            finished = false;
+            sharks = [];
+            score = 0;
+            scollBg = 0;
+            scroll = 10;
+            loop();
+        }
+        }
+
+        function setup() {
+        c = createCanvas(800, 450);
+        let frames = spritedata.frames;
+        for (let i=0;i<frames.length;i++){
+            let pos = frames[i].position;
+            console.log(pos);
+            let img = spritesheet.get(pos.x,pos.y,pos.w,pos.h);
+            playeranimation.push(img);
+        }
+
+        player = new PlayerSprite(playeranimation);
+        }
+
+
+        function keyPressed() {
+        if (key == ' ') {
+            player.jump();
+        }
+        if (finished){
+            finished = false;
+            sharks = [];
+            score = 0;
+            scollBg = 0;
+            scroll = 10;
+            loop();
+        }
+        if (key == 's' || key == 'S'){
+        saveCanvas(c,"screenshot.png");
+        }
+        }
+
+        function draw() {
+
+        image(bImg, -scrollBg, 0, width,height);
+        image(bImg, -scrollBg + width, 0,width,height);
+        
+        if (scrollBg > width) {
+            scrollBg = 0;
+        }
+
+        if (random(1) < 0.57 && frameCount % 120 == 0) {
+            sharks.push(new Sprite(animation, 640,random(370,400),random(0.2,0.4)));
+        }
+        if (frameCount % 5 == 0) {
+            score++;
+        }
+        if (score > high_score) {
+                high_score = (score);}
+
+        
+        textSize(32);
+        fill(255,128,128);
+        text(`Score: ${score}`, 10, 30);
+            
+        fill(255,128,128);
+        text(`High Score: ${high_score}`, 550, 30);
+
+        for (let t of sharks) {
+            t.move();
+            t.show();
+            if (player.hits(t)) {
+
+            textSize(32);
+            fill(0, 102, 153);
+            text('Game Over 😢', 300, 200);
+            text('Press anything to restart', 240, 240);
+            text(`'s' or 'S' for a screenshot`, 260, 280);
+            finished = true;
+            noLoop();
+
+            }
+        }
+
+        player.show();
+        player.move();
+        player.animate();
+        scroll += 0.005;
+        scrollBg += scroll / 5;
+
+        }
+
+        function touchStarted() {
+
+            player.jump();
+        
+        if (finished){
+            finished = false;
+            sharks = [];
+            score = 0;
+            scollBg = 0;
+            scroll = 10;
+            loop();
+        }
+        }
+
+  </script>
+  <script src={{ url_for('send_static', path='playersprite.js') }}></script>
+  <script src={{ url_for('send_static', path='player.js') }}></script>
+  <script src={{ url_for('send_static', path='sketch.js') }}></script>
+  <script src={{ url_for('send_static', path='shark.js') }}></script>
+</div>
+</body>
+
+</html>

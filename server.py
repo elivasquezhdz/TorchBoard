@@ -1,6 +1,7 @@
 from flask import Flask,Response,send_file, render_template, url_for, send_from_directory,request,flash,redirect,make_response
 from werkzeug.utils import secure_filename
-from sprite_helper import *
+#from sprite_helper import *
+from Generate_Sprites import Generate_Sprites
 from PIL import Image
 import numpy as np
 import base64
@@ -46,7 +47,12 @@ def upload_cam():
         img = np.array(im) 
         # Convert RGB to BGR 
         img = img[:, :, ::-1].copy() 
-
+        sprites = Generate_Sprites(img)['sprites']
+        PIL_image = Image.fromarray(sprites.astype('uint8'), 'RGB')
+        buffered = io.BytesIO()
+        PIL_image.save(buffered, format="JPEG")
+        encoded_sprites = base64.b64encode(buffered.getvalue())
+        '''
         masked_img = get_masked_image(img)
         croped_image = crop_image(masked_img)
         resized = cv2.resize(croped_image, (150,450))
@@ -63,8 +69,11 @@ def upload_cam():
         imgs.append(rotate_image(dst,-5))
         imgs.append(rotate_image(dst,-3))        
         sprites = np.concatenate(imgs, axis=1)
-        cv2.imwrite("static/sprites.png",sprites)
-        return redirect(url_for('play'))
+        '''
+
+        #cv2.imwrite("static/sprites.png",sprites)
+        return render_template('playimage.html',sprites=encoded_sprites)
+        #return redirect(url_for('play'))
     else:
         '''sprites = cv2.imread("sprites.png",cv2.IMREAD_UNCHANGED)
         os.remove("sprites.png")
@@ -131,4 +140,4 @@ def upload_file():
     return redirect(url_for('picture'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0",debug=True,port=8000)

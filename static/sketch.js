@@ -42,12 +42,21 @@ function preload() {
 }
 
 function mousePressed() {
-  sharks.push(new Sprite(animation, 640,random(370,400),random(0.3,0.55)));
+  
+  //sharks.push(new Sprite(animation, 640,random(370,400),random(0.3,0.55)));
+  player.jump();
+  if (finished){
+    finished = false;
+    sharks = [];
+    score = 0;
+    scollBg = 0;
+    scroll = 10;
+    loop();
+  }
 }
 
 function setup() {
   c = createCanvas(800, 450);
-
   let frames = spritedata.frames;
   for (let i=0;i<frames.length;i++){
     let pos = frames[i].position;
@@ -86,8 +95,8 @@ function draw() {
     scrollBg = 0;
   }
 
-  if (random(1) < 0.6667 && frameCount % 70 == 0) {
-    sharks.push(new Sprite(animation, 640,random(370,400),random(0.3,0.55)));
+  if (random(1) < 0.57 && frameCount % 120 == 0) {
+    sharks.push(new Sprite(animation, 640,random(370,400),random(0.2,0.4)));
   }
   if (frameCount % 5 == 0) {
     score++;
@@ -127,4 +136,16 @@ function draw() {
 
 }
 
+function touchStarted() {
 
+    player.jump();
+  
+  if (finished){
+    finished = false;
+    sharks = [];
+    score = 0;
+    scollBg = 0;
+    scroll = 10;
+    loop();
+  }
+}
